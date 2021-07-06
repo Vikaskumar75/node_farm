@@ -1,6 +1,6 @@
 const fs = require("fs");
 const http = require("http");
-const url = require("url");
+const { URL } = require("url");
 
 /*--------------------------*/
 //Filesystem
@@ -63,7 +63,9 @@ const replaceTemplate = (template, product) => {
 };
 
 const server = http.createServer((req, res) => {
-  const { query, pathname } = url.parse(req.url,true);
+  const myUrl = new URL( req.url ,`https://127.0.0.1:8000`);
+  const pathname = myUrl.pathname;
+  const query = myUrl.searchParams.get('id');
 
   //Overview Page
   if (pathname == "/" || pathname === "/overview") {
@@ -77,8 +79,9 @@ const server = http.createServer((req, res) => {
     //Product Page
   } else if (pathname === "/product") {
     res.writeHead(200, { "Content-type": "text/html" });
-    const product = dataObj[query.id];
-    const output = replaceTemplate(tempProduct,product);
+    const product = dataObj[query];
+
+    const output = replaceTemplate(tempProduct, product);
     res.end(output);
 
     //Api
